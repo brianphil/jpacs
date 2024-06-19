@@ -1,21 +1,27 @@
 import React, { useState } from 'react';
 import { Form, Button, Container } from 'react-bootstrap';
-import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import {config} from '../services/config'
+import { useNavigate } from 'react-router';
+
 const LoginPage = () => {
   const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-
+  const navigate = useNavigate()
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${config.BASE_URL}/api/auth/login`, { username, password });
-      login(res.data); // Assuming login() sets user data in AuthContext
+      const auth = await login({ username, password });
+      if(auth.user){
+        navigate('/dashboard')
+      }
+      else{
+        setError(error.response?.data?.message || 'Login failed');
+      }
     } catch (error) {
-      setError(error.response.data.message);
+      console.log("***",error)
+      setError(error.response?.data?.message || 'Login failed');
     }
   };
 
@@ -34,7 +40,6 @@ const LoginPage = () => {
               required
             />
           </Form.Group>
-
           <Form.Group controlId="formBasicPassword">
             <Form.Label>Password</Form.Label>
             <Form.Control
@@ -45,7 +50,6 @@ const LoginPage = () => {
               required
             />
           </Form.Group>
-
           <Button variant="primary" type="submit" className="w-100 mt-3">
             Login
           </Button>
