@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
           setUser(data);
         }
       } catch (error) {
-        console.error(error);
+        console.error("Authorization: ",error);
       }
     };
 

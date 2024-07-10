@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 
 const PrivateRoute = ({ element }) => {
   const { user } = useAuth();
+  console.log("User: ", user)
   return user ? element : <Navigate to="/login" />;
 };
 
