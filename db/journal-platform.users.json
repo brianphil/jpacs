@@ -1,0 +1,28 @@
+[{
+  "_id": {
+    "$oid": "6672a2cd6fd8be89d5b89cce"
+  },
+  "username": "jdoe",
+  "password": "$2a$10$4hnScyN3JnLJfdDyNJL0Ler9M/WVSt40kIuW/Yj4gLBqbBIPxTHwG",
+  "role": "author",
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "johndoe@example.com",
+  "affiliation": "University of Examples",
+  "bio": "John Doe is an author at the University of Examples specializing in AI research.",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6672a34f6fd8be89d5b89cd2"
+  },
+  "username": "janedoe",
+  "password": "$2a$10$kBwrShzXcvSb0xieWGXee.SfwDRsHvCvB0yZwXUvxzYBsUZpGPUzi",
+  "role": "reviewer",
+  "firstName": "Jane",
+  "lastName": "Doe",
+  "email": "janedoe@example.com",
+  "affiliation": "University of Cape South",
+  "bio": "Jane Doe is a reviewer at the University of Cape South specializing in AI research.",
+  "__v": 0
+}]

@@ -1,0 +1,56 @@
+[{
+  "_id": {
+    "$oid": "6690f206b6a4e2c7e7138a89"
+  },
+  "content": "This is a thorough review with valuable insights.",
+  "rating": 4,
+  "reviewer": {
+    "$oid": "6672a34f6fd8be89d5b89cd2"
+  },
+  "article": {
+    "$oid": "668e9d76ab401add904019c6"
+  }
+},
+{
+  "_id": {
+    "$oid": "6690f206b6a4e2c7e7138a8a"
+  },
+  "content": "The article needs more detailed explanations in sections 2 and 3.",
+  "rating": 3,
+  "reviewer": {
+    "$oid": "6672a34f6fd8be89d5b89cd2"
+  },
+  "article": {
+    "$oid": "668e811b3d356830b0381896"
+  }
+},
+{
+  "_id": {
+    "$oid": "6690f206b6a4e2c7e7138a8b"
+  },
+  "content": "Excellent work. The methodology is robust and well-explained.",
+  "rating": 5,
+  "reviewer": {
+    "$oid": "6672a34f6fd8be89d5b89cd2"
+  },
+  "article": {
+    "$oid": "668e811b3d356830b0381896"
+  }
+},
+{
+  "_id": {
+    "$oid": "6691147b200e2d2e65171a64"
+  },
+  "article": {
+    "$oid": "668e811b3d356830b0381896"
+  },
+  "reviewer": {
+    "$oid": "6672a34f6fd8be89d5b89cd2"
+  },
+  "content": "The journal needs more alignment with JPACS core subjects",
+  "rating": 2,
+  "date": {
+    "$date": "2024-07-12T11:33:15.675Z"
+  },
+  "__v": 0
+}]

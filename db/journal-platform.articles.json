@@ -1,0 +1,57 @@
+[{
+  "_id": {
+    "$oid": "668e811b3d356830b0381896"
+  },
+  "title": "Other Research",
+  "abstract": "YThis jksnjsnio oijcnsnoi kskslnjc ",
+  "file": "1720615195578-HR-Direct Chat API.pdf",
+  "status": "submitted",
+  "author": {
+    "$oid": "6672a2cd6fd8be89d5b89cce"
+  },
+  "reviewers": [
+    "6672a34f6fd8be89d5b89cd2"
+  ],
+  "feedback": [
+    {
+      "$oid": "60d2e1f6f1e4b4a2b8d4b59f"
+    },
+    {
+      "$oid": "6691147b200e2d2e65171a64"
+    }
+  ],
+  "createdAt": {
+    "$date": "2024-07-10T12:39:55.590Z"
+  },
+  "updatedAt": {
+    "$date": "2024-07-12T11:33:15.682Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "668e9d76ab401add904019c6"
+  },
+  "title": "Other Descriptions",
+  "abstract": "Data ahn hahan hahh",
+  "file": "1720622454271-Bulk Designation Upload File.csv",
+  "status": "submitted",
+  "author": {
+    "$oid": "6672a2cd6fd8be89d5b89cce"
+  },
+  "reviewers": [
+    "6672a34f6fd8be89d5b89cd2"
+  ],
+  "feedback": [
+    {
+      "$oid": "60d2e1f6f1e4b4a2b8d4b59b"
+    }
+  ],
+  "createdAt": {
+    "$date": "2024-07-10T14:40:54.283Z"
+  },
+  "updatedAt": {
+    "$date": "2024-07-10T14:40:54.283Z"
+  },
+  "__v": 0
+}]
