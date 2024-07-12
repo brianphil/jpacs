@@ -1,10 +1,11 @@
 import React from 'react';
 import { Container } from 'react-bootstrap';
+import ReviewerDashboard from '../components/Reviewer/ReviewerDashboard';
 
 const ReviewAssignmentsPage = () => {
   return (
     <Container className="mt-5">
-      <h2>Review Assignments</h2>
+      <ReviewerDashboard/>
       {/* Add review assignments related content and logic here */}
     </Container>
   );

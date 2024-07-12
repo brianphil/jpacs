@@ -20,6 +20,7 @@ const App = () => (
           <Route path="new-submission"  element={<NewSubmissionPage />} />
           <Route path="review-assignments" element={<PrivateRoute element={<ReviewAssignmentsPage />} />} />
           <Route path="manage-submissions" element={<PrivateRoute element={<ManageSubmissionsPage />} />} />
+          <Route path="/dashboard/submissions/:submissionId" element={<PrivateRoute element={<SubmissionsPage />} />} />
           {/* <Route path="*" element={<NotFoundPage />} /> */}
         </Route>
         <Route path="/" element={<LoginPage />} />

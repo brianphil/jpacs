@@ -6,6 +6,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -21,7 +22,9 @@ export const AuthProvider = ({ children }) => {
           setUser(data);
         }
       } catch (error) {
-        console.error("Authorization: ",error);
+        console.error("Authorization: ", error);
+      } finally {
+        setLoading(false); // Ensure loading is set to false after fetching user data
       }
     };
 
@@ -33,8 +36,9 @@ export const AuthProvider = ({ children }) => {
       const { data } = await axios.post(`${config.BASE_URL}/api/auth/login`, credentials);
       localStorage.setItem('token', data.token);
       setUser(data.user);
-      return data
+      return data;
     } catch (error) {
+      console.error("Login error: ", error);
     }
   };
 
@@ -49,7 +53,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
@@ -57,9 +61,9 @@ export const AuthProvider = ({ children }) => {
 
 // Custom hook to use AuthContext
 export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) {
-      throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
-  };
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};

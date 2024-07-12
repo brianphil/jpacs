@@ -1,10 +1,11 @@
 import React from 'react';
 import { Container } from 'react-bootstrap';
+import DetailedSubmission from '../components/DetailedSubmission';
 
-const SubmissionsPage = () => {
+const SubmissionsPage = ({submissionId}) => {
   return (
     <Container className="mt-5">
-      <h2>Submissions</h2>
+      <DetailedSubmission submissionId={submissionId}/>
       {/* Add submissions related content and logic here */}
     </Container>
   );

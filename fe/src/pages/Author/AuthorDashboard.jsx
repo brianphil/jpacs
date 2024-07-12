@@ -17,6 +17,7 @@ import axios from "axios";
 import { config } from "../../services/config";
 import { FaPlus, FaSignOutAlt, FaEye, FaTrash } from "react-icons/fa"; // Importing icons from react-icons library
 import NewSubmissionPage from "../../components/NewSubmissionPage";
+import SubmissionsPage from "../SubmissionsPage";
 
 const AuthorDashboard = () => {
   const { user, logout } = useContext(AuthContext);
@@ -28,6 +29,8 @@ const AuthorDashboard = () => {
   const handleShow = () => setShow(true);
   const [showDel, setShowDel]=  useState(false);
   const [currentId, setCurrentId] = useState(null)
+  const [currentArticle, setCurrentArticle] = useState({});
+  const [showDetails, setShowDetails] = useState(false)
   const fetchSubmissions = async () => {
     setLoading(true);
     try {
@@ -55,6 +58,10 @@ const AuthorDashboard = () => {
     navigate("/login");
   };
 
+
+  const handleCloseDetails = ()=>{
+     setShowDetails(false)
+  }
   const handleNewSubmission = () => {
     // navigate('/dashboard/new-submission'
     handleShow();
@@ -69,6 +76,9 @@ const AuthorDashboard = () => {
   }
   const handleViewSubmission = (submissionId) => {
     // Logic for viewing a submission goes here
+    // navigate(`/dashboard/submissions/${submissionId}`)
+    setCurrentArticle(submissions.filter(s=> s._id === submissionId)[0])
+    setShowDetails(true)
     console.log(`Viewing submission with ID: ${submissionId}`);
   };
 
@@ -216,6 +226,24 @@ const AuthorDashboard = () => {
                 Yes
               </Button>
               <Button variant="secondary" onClick={handleCloseDel}>
+                Close
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </Col>
+        <Col>
+        <Modal show={showDetails} onHide={handleCloseDetails}>
+            <Modal.Header closeButton>
+              <Modal.Title>{currentArticle.title}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+             <SubmissionsPage submissionId={currentArticle._id}/>
+            </Modal.Body>
+            <Modal.Footer>
+              {/* <Button variant="danger" onClick={()=>handleDel(currentId)}>
+                Yes
+              </Button> */}
+              <Button variant="secondary" onClick={handleCloseDetails}>
                 Close
               </Button>
             </Modal.Footer>
