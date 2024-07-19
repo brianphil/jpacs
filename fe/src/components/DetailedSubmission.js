@@ -75,7 +75,7 @@ const DetailedSubmission = ({submissionId}) => {
                 {submission.feedback.map((review, index) => (
                   <li key={index}>
                     <strong>Reviewer:</strong> {review.reviewer.firstName} {review.reviewer.lastName} ({review.reviewer.email})<br />
-                    <strong>Comments:</strong> {review.comments}
+                    <strong>Comments:</strong> {review.content}
                   </li>
                 ))}
               </ul>

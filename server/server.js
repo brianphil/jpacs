@@ -35,9 +35,11 @@ const upload = multer({ storage: storage });
 const authRoutes = require('./routes/auth');
 const reviewRoutes = require('./routes/reviews');
 const articleRoutes = require('./routes/articles'); // No need to pass upload here
+const reviewerRoutes = require('./routes/reviewers');
 app.use('/api/auth', authRoutes);
 app.use('/api/articles', articleRoutes(upload)); // Pass upload here
 app.use('/api/reviews', reviewRoutes);
+app.use('/api', reviewerRoutes);
 
 app.get('*', (req, res) => {
     res.status(404).json({ error: 'not found!' });

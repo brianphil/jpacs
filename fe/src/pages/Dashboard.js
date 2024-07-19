@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Container, Button, Row, Col, Card, ListGroup } from "react-bootstrap";
 import AuthorDashboard from "./Author/AuthorDashboard";
 import ReviewAssignmentsPage from "./ReviewAssignmentsPage";
+import EditorDashboard from "../components/Editor/EditorDashboard";
 
 const Dashboard = () => {
   const { user, logout, loading } = useContext(AuthContext);
@@ -20,6 +21,13 @@ const Dashboard = () => {
     } else if (user.role === "editor") {
       return (
         <Container>
+          <Row>
+            <Col className="mt-3" style={{ textAlign: "right" }}>
+              <Button variant="primary" onClick={handleLogout} className="mt-3">
+                Logout
+              </Button>
+            </Col>
+          </Row>
           <Row>
             <Col>
               <h3>
@@ -42,9 +50,15 @@ const Dashboard = () => {
                   </ListGroup>
                 </Card.Body>
               </Card>
-              <Button variant="primary" onClick={handleLogout} className="mt-3">
-                Logout
-              </Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <Row>
+                <Col>
+                  <EditorDashboard />
+                </Col>
+              </Row>
             </Col>
           </Row>
         </Container>
@@ -54,12 +68,22 @@ const Dashboard = () => {
         <Container>
           <Row>
             <Col>
-
-              <ReviewAssignmentsPage />
-
-              <Button variant="primary" onClick={handleLogout} className="mt-3">
-                Logout
-              </Button>
+              <Row>
+                <Col className="mt-3" style={{ textAlign: "right" }}>
+                  <Button
+                    variant="primary"
+                    onClick={handleLogout}
+                    className="mt-3"
+                  >
+                    Logout
+                  </Button>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <ReviewAssignmentsPage />
+                </Col>
+              </Row>
             </Col>
           </Row>
         </Container>
