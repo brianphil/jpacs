@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const path = require('path');
 require('dotenv').config();
 const morgan = require('morgan'); // Import morgan
 const multer = require('multer'); // Import multer
@@ -12,7 +13,8 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
-
+// Serve static files from the "uploads" directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,

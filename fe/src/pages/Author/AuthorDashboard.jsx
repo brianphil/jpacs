@@ -15,7 +15,7 @@ import {
 } from "react-bootstrap";
 import axios from "axios";
 import { config } from "../../services/config";
-import { FaPlus, FaSignOutAlt, FaEye, FaTrash } from "react-icons/fa"; // Importing icons from react-icons library
+import { FaPlus, FaSignOutAlt, FaEye, FaTrash, FaEdit } from "react-icons/fa"; // Importing icons from react-icons library
 import NewSubmissionPage from "../../components/NewSubmissionPage";
 import SubmissionsPage from "../SubmissionsPage";
 
@@ -27,10 +27,12 @@ const AuthorDashboard = () => {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const [showDel, setShowDel]=  useState(false);
-  const [currentId, setCurrentId] = useState(null)
+  const [showDel, setShowDel] = useState(false);
+  const [currentId, setCurrentId] = useState(null);
   const [currentArticle, setCurrentArticle] = useState({});
-  const [showDetails, setShowDetails] = useState(false)
+  const [showDetails, setShowDetails] = useState(false);
+  const [data, setData] = useState([]);
+  const [mode, setMode] = useState("create");
   const fetchSubmissions = async () => {
     setLoading(true);
     try {
@@ -40,11 +42,9 @@ const AuthorDashboard = () => {
           Authorization: token
         }
       });
-      console.log(response);
 
       setSubmissions(response?.data);
     } catch (error) {
-      console.error("Error fetching submissions:", error);
     } finally {
       setLoading(false);
     }
@@ -58,28 +58,27 @@ const AuthorDashboard = () => {
     navigate("/login");
   };
 
-
-  const handleCloseDetails = ()=>{
-     setShowDetails(false)
-  }
+  const handleCloseDetails = () => {
+    setShowDetails(false);
+  };
   const handleNewSubmission = () => {
     // navigate('/dashboard/new-submission'
+    setMode("create");
     handleShow();
   };
-  const handleCloseDel = ()=>{
-    setShowDel(false)
-  }
+  const handleCloseDel = () => {
+    setShowDel(false);
+  };
 
-  const handleDel = (submissionId)=>{
-     handleDeleteSubmission(submissionId)
-     setShowDel(false)
-  }
+  const handleDel = (submissionId) => {
+    handleDeleteSubmission(submissionId);
+    setShowDel(false);
+  };
   const handleViewSubmission = (submissionId) => {
     // Logic for viewing a submission goes here
     // navigate(`/dashboard/submissions/${submissionId}`)
-    setCurrentArticle(submissions.filter(s=> s._id === submissionId)[0])
-    setShowDetails(true)
-    console.log(`Viewing submission with ID: ${submissionId}`);
+    setCurrentArticle(submissions.filter((s) => s._id === submissionId)[0]);
+    setShowDetails(true);
   };
 
   const handleDeleteSubmission = async (submissionId) => {
@@ -96,9 +95,7 @@ const AuthorDashboard = () => {
         (submission) => submission._id !== submissionId
       );
       setSubmissions(updatedSubmissions);
-    } catch (error) {
-      console.error("Error deleting submission:", error);
-    }
+    } catch (error) {}
   };
 
   return (
@@ -179,16 +176,35 @@ const AuthorDashboard = () => {
                       <Button
                         variant="outline-primary"
                         onClick={() => handleViewSubmission(submission._id)}
-                        className="mr-2"
+                        className="m-2"
                       >
                         <FaEye />
                       </Button>
                       <Button
+                        className="m-2"
                         variant="outline-danger"
-                        onClick={() => {setShowDel(true); setCurrentId(submission._id)}}
+                        onClick={() => {
+                          setShowDel(true);
+                          setCurrentId(submission._id);
+                        }}
                       >
                         <FaTrash />
                       </Button>
+                      {submission.status === "submitted" ? (
+                        <Button
+                          className="m-2"
+                          variant="outline-info"
+                          onClick={() => {
+                            setData(submission);
+                            setMode("edit");
+                            handleShow(true);
+                          }}
+                        >
+                          <FaEdit />
+                        </Button>
+                      ) : (
+                        ""
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -204,7 +220,12 @@ const AuthorDashboard = () => {
               <Modal.Title>New Submission</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <NewSubmissionPage fetchSubmissions = {fetchSubmissions} handleClose={handleClose}/>
+              <NewSubmissionPage
+                fetchSubmissions={fetchSubmissions}
+                handleClose={handleClose}
+                data={data}
+                mode={mode}
+              />
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={handleClose}>
@@ -214,15 +235,15 @@ const AuthorDashboard = () => {
           </Modal>
         </Col>
         <Col>
-        <Modal show={showDel} onHide={handleCloseDel}>
+          <Modal show={showDel} onHide={handleCloseDel}>
             <Modal.Header closeButton>
               <Modal.Title>Delete Submission</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-             Are you sure you want to delete this submission?
+              Are you sure you want to delete this submission?
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="danger" onClick={()=>handleDel(currentId)}>
+              <Button variant="danger" onClick={() => handleDel(currentId)}>
                 Yes
               </Button>
               <Button variant="secondary" onClick={handleCloseDel}>
@@ -232,12 +253,12 @@ const AuthorDashboard = () => {
           </Modal>
         </Col>
         <Col>
-        <Modal show={showDetails} onHide={handleCloseDetails}>
+          <Modal show={showDetails} onHide={handleCloseDetails}>
             <Modal.Header closeButton>
               <Modal.Title>{currentArticle.title}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-             <SubmissionsPage submissionId={currentArticle._id}/>
+              <SubmissionsPage submissionId={currentArticle._id} />
             </Modal.Body>
             <Modal.Footer>
               {/* <Button variant="danger" onClick={()=>handleDel(currentId)}>

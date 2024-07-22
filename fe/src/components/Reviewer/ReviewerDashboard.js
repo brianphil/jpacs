@@ -31,7 +31,7 @@ const ReviewerDashboard = () => {
         };
         // const { data } = await axios.get(`${config.BASE_URL}/api/articles/assigned/${user._id}`, configs);
         const { data } = await axios.get(
-          `${config.BASE_URL}/api/articles/all`,
+          `${config.BASE_URL}/api/articles/assigned/${user._id}`,
           configs
         );
         setSubmissions(data);

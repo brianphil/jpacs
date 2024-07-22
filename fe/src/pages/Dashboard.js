@@ -1,11 +1,18 @@
 import React, { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { Container, Button, Row, Col, Card, ListGroup } from "react-bootstrap";
+import {
+  Container,
+  Button,
+  Row,
+  Col,
+  Card,
+  ListGroup,
+} from "react-bootstrap";
 import AuthorDashboard from "./Author/AuthorDashboard";
 import ReviewAssignmentsPage from "./ReviewAssignmentsPage";
 import EditorDashboard from "../components/Editor/EditorDashboard";
-
+import { FaSignOutAlt } from "react-icons/fa";
 const Dashboard = () => {
   const { user, logout, loading } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -24,7 +31,7 @@ const Dashboard = () => {
           <Row>
             <Col className="mt-3" style={{ textAlign: "right" }}>
               <Button variant="primary" onClick={handleLogout} className="mt-3">
-                Logout
+                Logout <FaSignOutAlt style={{ marginLeft: "5px" }} />
               </Button>
             </Col>
           </Row>
@@ -75,7 +82,7 @@ const Dashboard = () => {
                     onClick={handleLogout}
                     className="mt-3"
                   >
-                    Logout
+                    Logout <FaSignOutAlt style={{ marginLeft: "5px" }} />
                   </Button>
                 </Col>
               </Row>

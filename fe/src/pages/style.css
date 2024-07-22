@@ -1,0 +1,9 @@
+.form-placeholder::placeholder{
+    color: rgb(182, 182, 182);
+    font-size: .9rem;
+    opacity: 1;
+}
+
+.register{
+    background-color: rgb(248, 247, 247);
+}

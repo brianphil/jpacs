@@ -10,11 +10,13 @@ import NotFoundPage from './pages/NotFoundPage';
 import PrivateRoute from './components/PrivateRoute';
 import NewSubmissionPage from './components/NewSubmissionPage';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import RegisterPage from './pages/RegisterPage';
 const App = () => (
   <AuthProvider>
     <Router>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage/>} />
         <Route path="/dashboard" element={<PrivateRoute element={<Dashboard />} />}>
           <Route path="submissions" element={<PrivateRoute element={<SubmissionsPage />} />} />
           <Route path="new-submission"  element={<NewSubmissionPage />} />

@@ -2,7 +2,7 @@ const express = require("express");
 const Article = require("../models/Article");
 const User = require("../models/User");
 const { isAuthenticated, isEditor } = require("../middlewares/auth");
-const { ObjectId } = require("mongodb");
+const  ObjectId = require("mongoose").Types.ObjectId;
 const articleRoutes = (upload) => {
   const router = express.Router();
 
@@ -28,6 +28,25 @@ const articleRoutes = (upload) => {
       }
     }
   );
+
+  router.put('/update', isAuthenticated, async (req, res)=>{
+    const {title, _id, abstract} = req.body
+    try{
+      console.log(_id)
+      const article = await Article.updateOne({_id: new ObjectId(_id.toString())}, {$set: {title: title, abstract: abstract}});
+      console.log(article)
+      if(article.modifiedCount > 0){
+        res.status(201).json({success: true, message: 'Submission updated successfully!'})
+      }
+      else{
+        res.status(200).json({success: false, message: 'Submission was not modified!'})
+      }
+    }
+    catch(err){
+      console.log(err)
+      res.status(400).json('Failed to update submission')
+    }
+  })
 
   // Get articles for editor
   router.get("/all", async (req, res) => {

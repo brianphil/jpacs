@@ -1,21 +1,77 @@
 import React, { useState } from "react";
 import { Container, Form, Button, Alert, Spinner } from "react-bootstrap";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { config } from "../services/config";
 
-const NewSubmissionPage = ({ fetchSubmissions, handleClose }) => {
-  const [title, setTitle] = useState("");
-  const [abstract, setAbstract] = useState("");
+const NewSubmissionPage = ({
+  fetchSubmissions,
+  handleClose,
+  data = [],
+  mode = "create"
+}) => {
+  const [title, setTitle] = useState(mode === "create" ? "" : data.title);
+  const [abstract, setAbstract] = useState(
+    mode === "create" ? "" : data.abstract
+  );
   const [file, setFile] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [_id, setId]= useState(data._id || null)
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
 
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    if (!title || !abstract) {
+      setError("All fields are required.");
+      return;
+    }
+
+    if (title && abstract) {
+      const payload = {
+        _id,
+        title,
+        abstract
+      };
+      try {
+        setLoading(true);
+        const token = localStorage.getItem("token");
+        const configs = {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token
+          }
+        };
+        const response = await axios.put(
+          `${config.BASE_URL}/api/articles/update`,
+          { ...payload },
+          configs
+        );
+        if (response.data.success) {
+          setSuccess(response.data.message);
+          setTimeout(() => {
+            fetchSubmissions();
+            setLoading(false);
+            handleClose();
+          }, 3000);
+        } else {
+          console.log(response)
+          setError(response?.data.message || "Failed to update submission!");
+          setLoading(false)
+        }
+      } catch (e) {
+        console.log(e)
+        setError("Failed to update submission.");
+      }
+    }
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -63,7 +119,9 @@ const NewSubmissionPage = ({ fetchSubmissions, handleClose }) => {
 
   return (
     <Container>
-      <h2 className="mt-4">New Submission</h2>
+      <h2 className="mt-4">
+        {mode === "create" ? "New Submission" : "Edit Submission"}
+      </h2>
       {error && <Alert variant="danger">{error}</Alert>}
       {success && <Alert variant="success">{success}</Alert>}
       <Form onSubmit={handleSubmit} className="mt-4">
@@ -89,14 +147,23 @@ const NewSubmissionPage = ({ fetchSubmissions, handleClose }) => {
             required
           />
         </Form.Group>
-
-        <Form.Group controlId="file" className="mt-3">
-          <Form.Label>Upload File</Form.Label>
-          <Form.Control type="file" onChange={handleFileChange} required />
-        </Form.Group>
-
-        <Button variant="primary" type="submit" className="mt-4">
-          Submit
+        {mode === "create" && (
+          <Form.Group controlId="file" className="mt-3">
+            <Form.Label>Upload File</Form.Label>
+            <Form.Control
+              type="file"
+              onChange={handleFileChange}
+              required
+            />
+          </Form.Group>
+        )}
+        <Button
+          variant="primary"
+          type="submit"
+          className="mt-4"
+          onClick={(e) => (mode === "create" ? handleSubmit(e) : handleUpdate(e))}
+        >
+          {mode === "create" ? "Submit" : "Update"}
         </Button>
       </Form>
       <div style={{ textAlign: "center" }}>
