@@ -14,8 +14,8 @@ router.post('/register', async (req, res) => {
 
     user = await User.findOne({ email });
     if (user) return res.status(400).json({ message: 'Email already exists' });
-
-    user = new User({ username, password, role, firstName, lastName, email, affiliation, bio });
+    const isApproved = role=="author"? true: false;
+    user = new User({ username, password, role, firstName, lastName, email, affiliation, bio, isApproved });
     await user.save();
 
     const payload = { id: user.id };
@@ -54,6 +54,32 @@ router.post('/login', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });
+  }
+});
+// Approve user
+router.post('/approve/:userId', isAuthenticated, isEditor, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findByIdAndUpdate(userId, { isApproved: true }, { new: true });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json({ message: 'User approved successfully' });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+
+// Fetch users pending approval
+router.get('/pending', isAuthenticated, isEditor, async (req, res) => {
+  try {
+    const pendingUsers = await User.find({ isApproved: false });
+    res.status(200).json(pendingUsers);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
 });
 

@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   affiliation: { type: String, required: true },
   bio: { type: String },
+  isApproved: { type: Boolean, default: false }, 
 });
 
 userSchema.pre('save', async function(next) {
