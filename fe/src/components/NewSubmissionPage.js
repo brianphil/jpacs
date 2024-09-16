@@ -18,7 +18,7 @@ const NewSubmissionPage = ({
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-  const [_id, setId]= useState(data._id || null)
+  const [id, setId]= useState(data.id || null)
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -36,7 +36,7 @@ const NewSubmissionPage = ({
 
     if (title && abstract) {
       const payload = {
-        _id,
+        id,
         title,
         abstract
       };

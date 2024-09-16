@@ -37,7 +37,7 @@ const ApprovalDashboard = () => {
         },
       };
       await axios.post(`${config.BASE_URL}/api/auth/approve/${userId}`, {}, configs);
-      setUsers(users.filter(user => user._id !== userId));
+      setUsers(users.filter(user => user.id !== userId));
       setSuccess('User approved successfully.');
     } catch (error) {
       setError('Failed to approve user.');
@@ -61,13 +61,13 @@ const ApprovalDashboard = () => {
         </thead>
         <tbody>
           {users.map(user => (
-            <tr key={user._id}>
+            <tr key={user.id}>
               <td>{user.firstName}</td>
               <td>{user.lastName}</td>
               <td>{user.email}</td>
               <td>{user.role}</td>
               <td>
-                <Button onClick={() => handleApprove(user._id)}>Approve</Button>
+                <Button onClick={() => handleApprove(user.id)}>Approve</Button>
               </td>
             </tr>
           ))}

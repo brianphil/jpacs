@@ -115,7 +115,7 @@ const EditorDashboard = () => {
       );
       setReviewers(
         data.map((reviewer) => ({
-          value: reviewer._id,
+          value: reviewer.id,
           label: `${reviewer.firstName} ${reviewer.lastName}`
         }))
       );
@@ -139,7 +139,7 @@ const EditorDashboard = () => {
   };
 
   const openViewModal = async (articleId) => {
-    setCurrentArticle(articles.find(article => article._id === articleId));
+    setCurrentArticle(articles.find(article => article.id === articleId));
     setSelectedArticle(articleId);
     setShowDetails(true);
   };
@@ -166,7 +166,7 @@ const EditorDashboard = () => {
             </thead>
             <tbody>
               {articles.map((article) => (
-                <tr key={article._id}>
+                <tr key={article.id}>
                   <td>{article.title}</td>
                   <td>{article.abstract}</td>
                   <td>{article.status}</td>
@@ -174,20 +174,20 @@ const EditorDashboard = () => {
                     <Button
                       variant="success"
                       className="m-2"
-                      onClick={() => openViewModal(article._id)}
+                      onClick={() => openViewModal(article.id)}
                     >
                       View Article
                     </Button>
                     <Button
                       variant="info"
                       className="m-2"
-                      onClick={() => openAssignModal(article._id)}
+                      onClick={() => openAssignModal(article.id)}
                     >
                       Assign Reviewer
                     </Button>
                     <Button
                       variant="primary"
-                      onClick={() => openStatusModal(article._id)}
+                      onClick={() => openStatusModal(article.id)}
                     >
                       Update Status
                     </Button>
