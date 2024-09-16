@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User  = require("../models/User"); // Sequelize models
+const User  = require("../models/User"); 
 const { isAuthenticated, isEditor } = require("../middlewares/auth"); // Import isAuthenticated middleware
 
 // Register
@@ -64,7 +64,7 @@ router.post("/login", async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", err });
   }
 });
 // Approve user
