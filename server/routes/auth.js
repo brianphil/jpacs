@@ -2,22 +2,25 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const User  = require("../models/User"); // Sequelize models
 const { isAuthenticated, isEditor } = require("../middlewares/auth"); // Import isAuthenticated middleware
 
 // Register
 router.post("/register", async (req, res) => {
   const { username, password, role, firstName, lastName, email, affiliation, bio } = req.body;
   try {
-    let user = await User.findOne({ username });
+    let user = await User.findOne({ where: { username } });
     if (user) return res.status(400).json({ message: "Username already exists" });
 
-    user = await User.findOne({ email });
+    user = await User.findOne({ where: { email } });
     if (user) return res.status(400).json({ message: "Email already exists" });
-    const isApproved = role == "author" ? true : false;
-    user = new User({
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const isApproved = role === "author";
+
+    user = await User.create({
       username,
-      password,
+      password: hashedPassword,
       role,
       firstName,
       lastName,
@@ -26,7 +29,6 @@ router.post("/register", async (req, res) => {
       bio,
       isApproved,
     });
-    await user.save();
 
     const payload = { id: user.id };
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
@@ -36,28 +38,27 @@ router.post("/register", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 // Login Route
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
   try {
     // Find user by username
-    const user = await User.findOne({ username });
-    if (user) {
-      // Compare passwords
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (isMatch) {
-        // Generate JWT
-        const token = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, {
-          expiresIn: "1h",
-        });
+    const user = await User.findOne({ where: { username } });
+    if (!user) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
 
-        // Respond with token and user details
-        res.json({ token, user });
-      } else {
-        return res.status(401).json({ message: "Invalid credentials" });
-      }
+    // Compare passwords
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (isMatch) {
+      // Generate JWT
+      const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, {
+        expiresIn: "1h",
+      });
+   console.log("token", token, user)
+      // Respond with token and user details
+      res.json({ token, user });
     } else {
       return res.status(401).json({ message: "Invalid credentials" });
     }
@@ -70,9 +71,9 @@ router.post("/login", async (req, res) => {
 router.post("/approve/:userId", isAuthenticated, isEditor, async (req, res) => {
   try {
     const { userId } = req.params;
-    const user = await User.findByIdAndUpdate(userId, { isApproved: true }, { new: true });
+    const [updated] = await User.update({ isApproved: true }, { where: { id: userId } });
 
-    if (!user) {
+    if (!updated) {
       return res.status(404).json({ error: "User not found" });
     }
 
@@ -81,21 +82,19 @@ router.post("/approve/:userId", isAuthenticated, isEditor, async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
-
 // Fetch users pending approval
 router.get("/pending", isAuthenticated, isEditor, async (req, res) => {
   try {
-    const pendingUsers = await User.find({ isApproved: false });
+    const pendingUsers = await User.findAll({ where: { isApproved: false } });
     res.status(200).json(pendingUsers);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 });
-
 // Get current user
 router.get("/user", isAuthenticated, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password");
+    const user = await User.findByPk(req.user.id, { attributes: { exclude: ['password'] } });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -105,10 +104,8 @@ router.get("/user", isAuthenticated, async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
-
 // Logout route
 router.post("/logout", (req, res) => {
-  // Simply respond with a success message, the client should handle the token removal
   res.json({ message: "Logged out successfully" });
 });
 
