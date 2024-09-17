@@ -112,16 +112,16 @@ const articleRoutes = (upload) => {
   });
 
   // Get all submissions (for editors)
-  router.get("/all", isAuthenticated, isEditor, async (req, res) => {
-    try {
-      const articles = await Article.find().populate(
-        "author reviewers feedback"
-      );
-      res.status(200).json(articles);
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
-  });
+  // router.get("/all", isAuthenticated, isEditor, async (req, res) => {
+  //   try {
+  //     const articles = await Article.find().populate(
+  //       "author reviewers feedback"
+  //     );
+  //     res.status(200).json(articles);
+  //   } catch (error) {
+  //     res.status(400).json({ error: error.message });
+  //   }
+  // });
 
   // Assign a reviewer to a submission
   router.post(
