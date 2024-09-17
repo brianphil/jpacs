@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Container, Form, Button, Row, Col, Card } from "react-bootstrap";
 import { config } from "../services/config";
 import "./style.css";
+import logo from "../assets/jpacs-logo.png";
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
     username: "",
@@ -13,7 +14,7 @@ const RegisterPage = () => {
     lastName: "",
     email: "",
     affiliation: "",
-    bio: ""
+    bio: "",
   });
   const navigate = useNavigate();
 
@@ -36,7 +37,12 @@ const RegisterPage = () => {
       <Row className="justify-content-md-center">
         <Col md={6}>
           <Card className="p-4 m-3">
-            <Card.Title style={{textAlign: 'center'}}><h1>Register</h1></Card.Title>
+            <Card.Title style={{ textAlign: "center" }}>
+              <h1>Register</h1>
+              <div className="p-1" style={{ height: "8rem", width: "8rem", margin: "0px auto" }}>
+                <img src={logo} style={{ height: "8rem", width: "8rem" }} alt="" />
+              </div>
+            </Card.Title>
             <Card.Body>
               <Form onSubmit={handleSubmit}>
                 <Form.Group controlId="username" className="m-2">

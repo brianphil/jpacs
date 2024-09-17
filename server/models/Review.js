@@ -9,3 +9,31 @@ const reviewSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('Review', reviewSchema);
+// const { DataTypes } = require('sequelize');
+// const sequelize = require('../db');
+// const Article = require('./Article');
+// const User = require('./User');
+
+// const Review = sequelize.define('Review', {
+//   content: {
+//     type: DataTypes.TEXT,
+//     allowNull: false,
+//   },
+//   rating: {
+//     type: DataTypes.INTEGER,
+//     validate: {
+//       min: 1,
+//       max: 5,
+//     },
+//   },
+//   date: {
+//     type: DataTypes.DATE,
+//     defaultValue: DataTypes.NOW,
+//   },
+// });
+
+// // Define relations
+// Review.belongsTo(Article, { foreignKey: 'articleId' });
+// Review.belongsTo(User, { as: 'reviewer', foreignKey: 'reviewerId' });
+
+// module.exports = Review;
