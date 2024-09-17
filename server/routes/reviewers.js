@@ -10,10 +10,11 @@ router.get('/reviewers/search', isEditor, async (req, res) => {
     const reviewers = await User.find({
       role: 'reviewer',
       $or: [
-        { firstName: { $regex: query, $options: 'i' } },
-        { lastName: { $regex: query, $options: 'i' } },
+        { firstName: { $regex: query, $options: 'ig' } },
+        { lastName: { $regex: query, $options: 'ig' } },
+        { username: { $regex: query, $options: 'ig' } },
       ],
-    }).select('firstName lastName _id');
+    }, { firstName: 1, lastName: 1, _id: 1 });
     res.status(200).json(reviewers);
   } catch (error) {
     res.status(400).json({ error: error.message });
