@@ -16,6 +16,7 @@ const isAuthenticated = async (req, res, next) => {
 };
 
 const isEditor = (req, res, next) => {
+  console.log("User", req.user)
   if (req.user.role !== 'editor') {
     return res.status(403).json({ message: 'Access denied' });
   }
