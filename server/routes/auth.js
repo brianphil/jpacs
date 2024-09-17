@@ -71,7 +71,7 @@ router.post("/login", async (req, res) => {
 router.post("/approve/:userId", isAuthenticated, isEditor, async (req, res) => {
   try {
     const { userId } = req.params;
-    const [updated] = await User.updateOne({ isApproved: true }, { $set: { id: userId } });
+    const updated = await User.updateOne({ id: userId  }, { $set: {isApproved: true} });
 
     if (!updated) {
       return res.status(404).json({ error: "User not found" });
