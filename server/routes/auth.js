@@ -9,10 +9,10 @@ const { isAuthenticated, isEditor } = require("../middlewares/auth"); // Import 
 router.post("/register", async (req, res) => {
   const { username, password, role, firstName, lastName, email, affiliation, bio } = req.body;
   try {
-    let user = await User.findOne({ where: { username } });
+    let user = await User.findOne({  username });
     if (user) return res.status(400).json({ message: "Username already exists" });
 
-    user = await User.findOne({ where: { email } });
+    user = await User.findOne({ email });
     if (user) return res.status(400).json({ message: "Email already exists" });
 
     // const hashedPassword = await bcrypt.hash(password, 10);
@@ -44,7 +44,7 @@ router.post("/login", async (req, res) => {
 
   try {
     // Find user by username
-    const user = await User.findOne({ where: { username } });
+    const user = await User.findOne({ username });
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
@@ -71,7 +71,7 @@ router.post("/login", async (req, res) => {
 router.post("/approve/:userId", isAuthenticated, isEditor, async (req, res) => {
   try {
     const { userId } = req.params;
-    const [updated] = await User.update({ isApproved: true }, { where: { id: userId } });
+    const [updated] = await User.updateOne({ isApproved: true }, { $set: { id: userId } });
 
     if (!updated) {
       return res.status(404).json({ error: "User not found" });
@@ -85,7 +85,7 @@ router.post("/approve/:userId", isAuthenticated, isEditor, async (req, res) => {
 // Fetch users pending approval
 router.get("/pending", isAuthenticated, isEditor, async (req, res) => {
   try {
-    const pendingUsers = await User.findAll({ where: { isApproved: false } });
+    const pendingUsers = await User.find({ isApproved: false});
     res.status(200).json(pendingUsers);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -94,7 +94,7 @@ router.get("/pending", isAuthenticated, isEditor, async (req, res) => {
 // Get current user
 router.get("/user", isAuthenticated, async (req, res) => {
   try {
-    const user = await User.findByPk(req.user.id, { attributes: { exclude: ['password'] } });
+    const user = await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
