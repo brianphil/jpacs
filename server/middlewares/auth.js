@@ -20,6 +20,7 @@ const isEditor = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = await User.findById(decoded.id).select('-password');
+    console.log("Decoded", req.user)
     if (req.user.role !== 'editor') {
       return res.status(403).json({ message: 'Access denied' });
     }
