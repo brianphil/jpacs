@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User  = require("../models/User"); 
 const { isAuthenticated, isEditor } = require("../middlewares/auth"); // Import isAuthenticated middleware
-
+const {ObjectId} = require('mongodb')
 // Register
 router.post("/register", async (req, res) => {
   const { username, password, role, firstName, lastName, email, affiliation, bio } = req.body;
@@ -71,7 +71,7 @@ router.post("/login", async (req, res) => {
 router.post("/approve/:userId", isAuthenticated, isEditor, async (req, res) => {
   try {
     const { userId } = req.params;
-    const updated = await User.updateOne({ id: userId  }, { $set: {isApproved: true} });
+    const updated = await User.updateOne({ _id: new ObjectId(userId)  }, { $set: {isApproved: true} });
 
     if (!updated) {
       return res.status(404).json({ error: "User not found" });
