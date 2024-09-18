@@ -15,12 +15,19 @@ const isAuthenticated = async (req, res, next) => {
   }
 };
 
-const isEditor = (req, res, next) => {
-  console.log("User", req.user)
-  if (req.user.role !== 'editor') {
-    return res.status(403).json({ message: 'Access denied' });
+const isEditor = async (req, res, next) => {
+  const token =  req.header('Authorization');
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = await User.findById(decoded.id).select('-password');
+    if (req.user.role !== 'editor') {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+    next();
+  } catch (error) {
+    console.log(error)
+    res.status(401).json({ message: 'Token is not valid' });
   }
-  next();
 };
 
 module.exports = { isAuthenticated, isEditor };
