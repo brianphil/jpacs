@@ -2,7 +2,12 @@ const express = require("express");
 const Article = require("../models/Article");
 const User = require("../models/User");
 const { isAuthenticated, isEditor } = require("../middlewares/auth");
-const  ObjectId = require("mongoose").Types.ObjectId;
+const ObjectId = require("mongoose").Types.ObjectId;
+const axios = require("axios");
+const base64 = require("base-64");
+const WP_API_URL = process.env.WP_API_URL;
+const WP_USERNAME = process.env.WP_USERNAME;
+const WP_APP_PASSWORD = process.env.WP_APP_PASSWORD;
 const articleRoutes = (upload) => {
   const router = express.Router();
 
@@ -17,7 +22,7 @@ const articleRoutes = (upload) => {
           title: req.body.title,
           abstract: req.body.abstract,
           file: req.file.filename, // Save the filename or path in your database
-          author: req.user._id
+          author: req.user._id,
         });
 
         await article.save();
@@ -29,24 +34,59 @@ const articleRoutes = (upload) => {
     }
   );
 
-  router.put('/update', isAuthenticated, async (req, res)=>{
-    const {title, _id, abstract} = req.body
-    try{
-      console.log(_id)
-      const article = await Article.updateOne({_id: new ObjectId(_id.toString())}, {$set: {title: title, abstract: abstract}});
-      console.log(article)
-      if(article.modifiedCount > 0){
-        res.status(201).json({success: true, message: 'Submission updated successfully!'})
-      }
-      else{
-        res.status(200).json({success: false, message: 'Submission was not modified!'})
-      }
+  // Function to publish an article to WordPress
+  async function publishArticleToWordPress(article) {
+    try {
+      const credentials = base64.encode(`${WP_USERNAME}:${WP_APP_PASSWORD}`);
+      const response = await axios.post(
+        WP_API_URL,
+        {
+          title: article.title,
+          content: `
+          <h2>Abstract:</h2>
+          <p>${article.abstract}</p>
+          <a href="${article.file}" download>Download Article</a>
+        `,
+          status: "publish",
+          categories: 4, // Replace with the "Publications" category ID from WordPress
+        },
+        {
+          headers: {
+            Authorization: `Basic ${credentials}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Failed to publish article to WordPress:", error);
+      throw new Error("Error publishing article to WordPress");
     }
-    catch(err){
-      console.log(err)
-      res.status(400).json('Failed to update submission')
+  }
+
+  router.put("/update", isAuthenticated, async (req, res) => {
+    const { title, _id, abstract } = req.body;
+    try {
+      console.log(_id);
+      const article = await Article.updateOne(
+        { _id: new ObjectId(_id.toString()) },
+        { $set: { title: title, abstract: abstract } }
+      );
+      console.log(article);
+      if (article.modifiedCount > 0) {
+        res
+          .status(201)
+          .json({ success: true, message: "Submission updated successfully!" });
+      } else {
+        res
+          .status(200)
+          .json({ success: false, message: "Submission was not modified!" });
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(400).json("Failed to update submission");
     }
-  })
+  });
 
   // Get articles for editor
   router.get("/all", async (req, res) => {
@@ -85,8 +125,8 @@ const articleRoutes = (upload) => {
           path: "feedback",
           populate: {
             path: "reviewer",
-            select: "firstName lastName email"
-          }
+            select: "firstName lastName email",
+          },
         });
 
       if (!submission) {
@@ -103,7 +143,7 @@ const articleRoutes = (upload) => {
   router.get("/assigned/:reviewerId", isAuthenticated, async (req, res) => {
     try {
       const articles = await Article.find({
-        reviewers: req.params.reviewerId
+        reviewers: req.params.reviewerId,
       }).populate("author reviewers feedback");
       res.status(200).json(articles);
     } catch (error) {
@@ -176,6 +216,25 @@ const articleRoutes = (upload) => {
       }
     }
   );
+   // Assuming this is your route for approving an article
+   router.post("/:articleId/approve", async (req, res) => {
+    try {
+      const article = await Article.findById(req.params.articleId);
+      if (!article)
+        return res.status(404).json({ message: "Article not found" });
+
+      // Approve the article
+      article.isApproved = true;
+      await article.save();
+
+      // Publish the article to WordPress
+      await publishArticleToWordPress(article);
+
+      res.status(200).json({ message: "Article approved and published" });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
 
   return router;
 };
