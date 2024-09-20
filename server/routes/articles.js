@@ -48,7 +48,7 @@ const articleRoutes = (upload) => {
 
       // Make the request to publish the article
       const response = await axios.post(
-        process.env.WP_API_URL + "/wp-json/wp/v2/posts",
+        process.env.WP_API_URL + "/posts",
         {
           title: article.title,
           content: `
@@ -80,7 +80,7 @@ const articleRoutes = (upload) => {
     try {
       // Check if the author already exists in WordPress by email
       const existingUserResponse = await axios.get(
-        `${process.env.WP_API_URL}/wp-json/wp/v2/users?search=${mongoUser.email}`,
+        `${process.env.WP_API_URL}/users?search=${mongoUser.email}`,
         {
           headers: {
             Authorization: `Basic ${credentials}`,
@@ -95,7 +95,7 @@ const articleRoutes = (upload) => {
 
       // If not found, create a new author in WordPress
       const newUserResponse = await axios.post(
-        `${process.env.WP_API_URL}/wp-json/wp/v2/users`,
+        `${process.env.WP_API_URL}/users`,
         {
           username: mongoUser.username,
           email: mongoUser.email,
