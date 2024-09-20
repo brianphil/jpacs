@@ -37,9 +37,18 @@ const articleRoutes = (upload) => {
   // Function to publish an article to WordPress
   async function publishArticleToWordPress(article) {
     try {
-      const credentials = base64.encode(`${WP_USERNAME}:${WP_APP_PASSWORD}`);
+      const credentials = base64.encode(
+        `${process.env.WP_USERNAME}:${process.env.WP_APP_PASSWORD}`
+      );
+
+      // Fetch the current author from MongoDB
+      const currentAuthor = await User.findOne({ _id: article.author });
+      // WordPress expects an author ID, so you should either find or create the author in WordPress
+      const wpAuthorId = await getOrCreateWpAuthor(currentAuthor, credentials);
+
+      // Make the request to publish the article
       const response = await axios.post(
-        WP_API_URL,
+        process.env.WP_API_URL + "/wp-json/wp/v2/posts",
         {
           title: article.title,
           content: `
@@ -47,8 +56,9 @@ const articleRoutes = (upload) => {
           <p>${article.abstract}</p>
           <a href="${article.file}" download>Download Article</a>
         `,
+          author: wpAuthorId, // Use the WordPress user ID for the author
           status: "publish",
-          categories: 4, // Replace with the "Publications" category ID from WordPress
+          categories: [4], // Replace with the "Publications" category ID from WordPress
         },
         {
           headers: {
@@ -57,10 +67,55 @@ const articleRoutes = (upload) => {
           },
         }
       );
+
       return response.data;
     } catch (error) {
       console.error("Failed to publish article to WordPress:", error);
       throw new Error("Error publishing article to WordPress");
+    }
+  }
+
+  // Helper function to create or get the WordPress author
+  async function getOrCreateWpAuthor(mongoUser, credentials) {
+    try {
+      // Check if the author already exists in WordPress by email
+      const existingUserResponse = await axios.get(
+        `${process.env.WP_API_URL}/wp-json/wp/v2/users?search=${mongoUser.email}`,
+        {
+          headers: {
+            Authorization: `Basic ${credentials}`,
+          },
+        }
+      );
+
+      if (existingUserResponse.data.length > 0) {
+        // Return the WordPress user ID if found
+        return existingUserResponse.data[0].id;
+      }
+
+      // If not found, create a new author in WordPress
+      const newUserResponse = await axios.post(
+        `${process.env.WP_API_URL}/wp-json/wp/v2/users`,
+        {
+          username: mongoUser.username,
+          email: mongoUser.email,
+          name: `${mongoUser.firstName} ${mongoUser.lastName}`,
+          password: "DefaultPassword123!", // You may want to generate a password or handle this securely
+          roles: ["author"], // Assign the 'author' role
+        },
+        {
+          headers: {
+            Authorization: `Basic ${credentials}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // Return the newly created WordPress user ID
+      return newUserResponse.data.id;
+    } catch (error) {
+      console.error("Failed to get or create WordPress author:", error);
+      throw new Error("Error managing WordPress author");
     }
   }
 
@@ -216,8 +271,8 @@ const articleRoutes = (upload) => {
       }
     }
   );
-   // Assuming this is your route for approving an article
-   router.post("/:articleId/approve", async (req, res) => {
+  // Assuming this is your route for approving an article
+  router.post("/:articleId/approve", async (req, res) => {
     try {
       const article = await Article.findById(req.params.articleId);
       if (!article)
