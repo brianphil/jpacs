@@ -9,6 +9,7 @@ const articleSchema = new mongoose.Schema({
   author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   reviewers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   feedback: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Review' }],
+  isApproved: {type: Boolean, default: false}
   
 
 },{ timestamps: true } );

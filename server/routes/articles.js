@@ -17,11 +17,12 @@ const articleRoutes = (upload) => {
     isAuthenticated,
     upload.single("file"),
     async (req, res) => {
+      const file = req.file.filename.replace(/\s/g, "_");
       try {
         const article = new Article({
           title: req.body.title,
           abstract: req.body.abstract,
-          file: req.file.filename, // Save the filename or path in your database
+          file, // Save the filename or path in your database
           author: req.user._id,
         });
 
@@ -279,9 +280,7 @@ const articleRoutes = (upload) => {
         return res.status(404).json({ message: "Article not found" });
 
       // Approve the article
-      article.isApproved = true;
-      await article.save();
-
+      await Article.findOneAndUpdate({_id: req.params.articleId}, {$set:{isApproved: true}})
       // Publish the article to WordPress
       await publishArticleToWordPress(article);
 
