@@ -3,12 +3,12 @@ import { Container, Form, Button, Alert, Spinner } from "react-bootstrap";
 import axios from "axios";
 // import { useNavigate } from "react-router-dom";
 import { config } from "../services/config";
-
+import { UploadButton } from "@bytescale/upload-widget-react";
 const NewSubmissionPage = ({
   fetchSubmissions,
   handleClose,
   data = [],
-  mode = "create"
+  mode = "create",
 }) => {
   const [title, setTitle] = useState(mode === "create" ? "" : data.title);
   const [abstract, setAbstract] = useState(
@@ -18,8 +18,11 @@ const NewSubmissionPage = ({
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-  const [_id, setId]= useState(data._id || null)
-
+  const [_id, setId] = useState(data._id || null);
+  const options = {
+    apiKey: "public_W142iniAEKdEky2mpBrb7e6vqAuz", // This is your API key.
+    maxFileCount: 1,
+  };
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
@@ -38,7 +41,7 @@ const NewSubmissionPage = ({
       const payload = {
         _id,
         title,
-        abstract
+        abstract,
       };
       try {
         setLoading(true);
@@ -46,8 +49,8 @@ const NewSubmissionPage = ({
         const configs = {
           headers: {
             "Content-Type": "application/json",
-            Authorization: token
-          }
+            Authorization: token,
+          },
         };
         const response = await axios.put(
           `${config.BASE_URL}/api/articles/update`,
@@ -62,12 +65,12 @@ const NewSubmissionPage = ({
             handleClose();
           }, 3000);
         } else {
-          console.log(response)
+          console.log(response);
           setError(response?.data.message || "Failed to update submission!");
-          setLoading(false)
+          setLoading(false);
         }
       } catch (e) {
-        console.log(e)
+        console.log(e);
         setError("Failed to update submission.");
       }
     }
@@ -83,55 +86,36 @@ const NewSubmissionPage = ({
     }
 
     if (title && abstract && file) {
+      const formData = new FormData();
+
+      formData.append("title", title);
+      formData.append("abstract", abstract);
+      formData.append("file", file);
       try {
         setLoading(true);
         const token = localStorage.getItem("token");
-    
-        // Convert file to base64
-        const fileReader = new FileReader();
-        fileReader.readAsDataURL(file);
-        
-        fileReader.onload = async () => {
-          const base64File = fileReader.result.split(',')[1]; // Remove the data:image/jpeg;base64, part
-          
-          const payload = {
-            title,
-            abstract,
-            file: base64File,
-            fileName: file.name
-          };
-    
-          const configs = {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: token
-            }
-          };
-    
-          const response = await axios.post(
-            `${config.BASE_URL}/api/articles/submit`,
-            payload,
-            configs
-          );
-    
-          if (response.data) {
-            setSuccess("Article submitted successfully!");
-            setTimeout(() => {
-              fetchSubmissions();
-              setLoading(false);
-              handleClose();
-            }, 3000);
-          }
+        const configs = {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: token,
+          },
         };
-    
-        fileReader.onerror = (error) => {
-          throw new Error("File could not be read: " + error.message);
-        };
-    
+        const response = await axios.post(
+          `${config.BASE_URL}/api/articles/submit`,
+          formData,
+          configs
+        );
+        if (response.data) {
+          setSuccess("Article submitted successfully!");
+          setTimeout(() => {
+            fetchSubmissions();
+            setLoading(false);
+            handleClose();
+          }, 3000);
+        }
       } catch (error) {
         console.error(error);
         setError("Failed to create submission.");
-        setLoading(false);
       }
     }
   };
@@ -169,18 +153,25 @@ const NewSubmissionPage = ({
         {mode === "create" && (
           <Form.Group controlId="file" className="mt-3">
             <Form.Label>Upload File</Form.Label>
-            <Form.Control
-              type="file"
-              onChange={handleFileChange}
-              required
-            />
+            <UploadButton
+              options={options}
+              onComplete={(files) =>
+                setFile(files.map((x) => x.fileUrl).join("\n"))
+              }
+            >
+              {({ onClick }) => (
+                <Button className="m-4" onClick={onClick}>Upload a file...</Button>
+              )}
+            </UploadButton>
           </Form.Group>
         )}
         <Button
           variant="primary"
           type="submit"
           className="mt-4"
-          onClick={(e) => (mode === "create" ? handleSubmit(e) : handleUpdate(e))}
+          onClick={(e) =>
+            mode === "create" ? handleSubmit(e) : handleUpdate(e)
+          }
         >
           {mode === "create" ? "Submit" : "Update"}
         </Button>
