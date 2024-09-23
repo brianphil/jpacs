@@ -86,11 +86,17 @@ const NewSubmissionPage = ({
     }
 
     if (title && abstract && file) {
-      const formData = new FormData();
+      // const formData = new FormData();
 
-      formData.append("title", title);
-      formData.append("abstract", abstract);
-      formData.append("file", file);
+      // formData.append("title", title);
+      // formData.append("abstract", abstract);
+      // formData.append("file", file);
+      const payload = {
+        title,
+        abstract,
+        file,
+        fileName: file.name
+      };
       try {
         setLoading(true);
         const token = localStorage.getItem("token");
@@ -102,7 +108,7 @@ const NewSubmissionPage = ({
         };
         const response = await axios.post(
           `${config.BASE_URL}/api/articles/submit`,
-          formData,
+          payload,
           configs
         );
         if (response.data) {
@@ -152,7 +158,6 @@ const NewSubmissionPage = ({
         </Form.Group>
         {mode === "create" && (
           <Form.Group controlId="file" className="mt-3">
-            <Form.Label>Upload File</Form.Label>
             <UploadButton
               options={options}
               onComplete={(files) =>
