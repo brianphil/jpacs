@@ -23,15 +23,15 @@ const articleRoutes = (upload) => {
     async (req, res) => {
       try {
         // Get the file data from the request
-        const fileData = req.body.file; // Assuming the file is sent as base64 in the request body
+        const fileData = req.file.data; // Assuming the file is sent as base64 in the request body
 
         // Upload the file to Bytescale
         const uploadResponse = await uploadManager.upload({
           data: Buffer.from(fileData, 'base64'),
-          originalFileName: req.body.fileName, // Ensure this is sent from the client
+          originalFileName: req.file.filename, // Ensure this is sent from the client
           path: {
             folderPath: '/articles/', // Adjust the folder path as needed
-            fileName: `${Date.now()}_${req.body.fileName.replace(/\s/g, "_")}`,
+            fileName: `${Date.now()}_${req.file.filename.replace(/\s/g, "_")}`,
           },
         });
 
