@@ -9,6 +9,7 @@ import {
   Alert,
   Tabs,
   Tab,
+  Spinner
 } from "react-bootstrap";
 import axios from "axios";
 import { config } from "../../services/config";
@@ -33,25 +34,25 @@ const EditorDashboard = () => {
   const [showDetails, setShowDetails] = useState(false);
   const [currentArticle, setCurrentArticle] = useState({});
   const [openApproveModal, setOpenPublishModal] = useState(false);
+  const [loading, setLoading] = useState(false)
+  const fetchArticles = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const configs = {
+        headers: {
+          Authorization: token,
+        },
+      };
+      const { data } = await axios.get(
+        `${config.BASE_URL}/api/articles/all`,
+        configs
+      );
+      setArticles(data);
+    } catch (error) {
+      console.error("Error fetching articles: ", error);
+    }
+  };
   useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const configs = {
-          headers: {
-            Authorization: token,
-          },
-        };
-        const { data } = await axios.get(
-          `${config.BASE_URL}/api/articles/all`,
-          configs
-        );
-        setArticles(data);
-      } catch (error) {
-        console.error("Error fetching articles: ", error);
-      }
-    };
-
     fetchArticles();
   }, []);
 
@@ -160,6 +161,7 @@ const EditorDashboard = () => {
 
   const handlePublish = async (e) => {
     e.preventDefault();
+    setLoading(true)
 
     try {
       const token = localStorage.getItem("token");
@@ -173,6 +175,8 @@ const EditorDashboard = () => {
         { status },
         configs
       );
+     await fetchArticles();
+      setLoading(false)
       setSuccess(response?.data?.message);
       setOpenPublishModal(false);
     } catch (error) {
@@ -294,6 +298,7 @@ const EditorDashboard = () => {
                 </p>
                 <strong>This action cannot be undone.</strong>
               </div>
+              { loading && <div style={{textAlign: "center", margin: '0.8rem'}}><Spinner animation="border" variant="primary" /></div>}
             </Modal.Body>
             <Modal.Footer>
               <Button
@@ -302,7 +307,7 @@ const EditorDashboard = () => {
               >
                 Close
               </Button>
-              <Button variant="success" onClick={handlePublish}>
+              <Button variant="success" disabled={loading} onClick={handlePublish}>
                 Approve and Publish
               </Button>
             </Modal.Footer>

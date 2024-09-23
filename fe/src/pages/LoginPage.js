@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Button, Container, Col, Row } from "react-bootstrap";
+import { Form, Button, Container, Col, Row, Spinner } from "react-bootstrap";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
@@ -10,17 +10,22 @@ const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate();
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true)
     try {
       const auth = await login({ username, password });
       if (auth.user) {
+        setLoading(false);
         navigate("/dashboard");
       } else {
+        setLoading(false);
         setError(error.response?.data?.message || "Login failed");
       }
     } catch (error) {
+      setLoading(false);
       console.log("***", error);
       setError(error.response?.data?.message || "Login failed");
     }
@@ -62,7 +67,8 @@ const LoginPage = () => {
                     required
                   />
                 </Form.Group>
-                <Button variant="primary" type="submit" className="w-100 mt-3">
+               { loading && <div style={{textAlign: "center", margin: '0.8rem'}}><Spinner animation="border" variant="primary" /></div>}
+                <Button variant="primary" type="submit" className="w-100 mt-3" disabled={loading}>
                   Login
                 </Button>
                 {error && <p className="text-danger mt-3">{error}</p>}

@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/brianphil/jpacs#readme",
   "dependencies": {
+    "@bytescale/sdk": "^3.45.0",
     "axios": "^1.7.7",
     "base-64": "^1.0.0",
     "bcryptjs": "^2.4.3",
@@ -33,6 +34,7 @@
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.11.2",
+    "node-fetch": "^3.3.2",
     "sequelize": "^6.37.3"
   },
   "devDependencies": {

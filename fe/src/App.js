@@ -10,6 +10,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import PrivateRoute from './components/PrivateRoute';
 import NewSubmissionPage from './components/NewSubmissionPage';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css';
 import RegisterPage from './pages/RegisterPage';
 const App = () => (
   <AuthProvider>

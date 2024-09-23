@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import { Container, Form, Button, Row, Col, Card } from "react-bootstrap";
+import { Container, Form, Button, Row, Col, Card, Spinner } from "react-bootstrap";
 import { config } from "../services/config";
 import "./style.css";
 import logo from "../assets/jpacs-logo.png";
@@ -17,17 +17,20 @@ const RegisterPage = () => {
     bio: "",
   });
   const navigate = useNavigate();
-
+  const [loading, setLoading] = useState(false)
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true)
     try {
       await axios.post(`${config.BASE_URL}/api/auth/register`, formData);
+      setLoading(false)
       navigate("/login");
     } catch (error) {
+      setLoading(false);
       console.error(error);
     }
   };
@@ -142,8 +145,9 @@ const RegisterPage = () => {
                     onChange={handleChange}
                   />
                 </Form.Group>
+                { loading && <div style={{textAlign: "center", margin: '0.8rem'}}><Spinner animation="border" variant="primary" /></div>}
                 <div style={{ textAlign: "center", margin: "1.2rem" }}>
-                  <Button variant="primary" type="submit">
+                  <Button variant="primary" type="submit" disabled={loading}>
                     Register
                   </Button>
                 </div>
