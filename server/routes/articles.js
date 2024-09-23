@@ -5,7 +5,6 @@ const { isAuthenticated, isEditor } = require("../middlewares/auth");
 const ObjectId = require("mongoose").Types.ObjectId;
 const axios = require("axios");
 const base64 = require("base-64");
-const { UploadManager } = require('@bytescale/sdk');
 const WP_API_URL = process.env.WP_API_URL;
 const WP_USERNAME = process.env.WP_USERNAME;
 const WP_APP_PASSWORD = process.env.WP_APP_PASSWORD;
@@ -13,42 +12,18 @@ const WP_APP_PASSWORD = process.env.WP_APP_PASSWORD;
 const articleRoutes = (upload) => {
   const router = express.Router();
 
-
-// Initialize Bytescale UploadManager
-const uploadManager = new UploadManager({
-  apiKey: process.env.BYTESCALE_API_KEY,
-});
-
-const articleRoutes = () => {
-  const router = express.Router();
-
-  // Submit an article
   router.post(
     "/submit",
     isAuthenticated,
     async (req, res) => {
       try {
-        // Get the file data from the request
-        const fileData = req.body.file; //the file is sent as base64 in the request body
-
-        // Upload the file to Bytescale
-        const uploadResponse = await uploadManager.upload({
-          data: Buffer.from(fileData, 'base64'),
-          originalFileName: req.body.fileName, // Ensure this is sent from the client
-          path: {
-            folderPath: '/articles/', // Adjust the folder path as needed
-            fileName: `${Date.now()}_${req.body.fileName.replace(/\s/g, "_")}`,
-          },
-        });
-
-        // Create and save the article
         const article = new Article({
           title: req.body.title,
           abstract: req.body.abstract,
-          file: uploadResponse.fileUrl, // Save the Bytescale file URL
+          file: req.body.file, // This is now the Bytescale file URL
           author: req.user._id,
         });
-
+  
         await article.save();
         res.status(201).json(article);
       } catch (error) {
@@ -57,9 +32,6 @@ const articleRoutes = () => {
       }
     }
   );
-
-  return router;
-};
 
 module.exports = articleRoutes;
 
