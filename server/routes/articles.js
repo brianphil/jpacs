@@ -56,7 +56,7 @@ const articleRoutes = (upload) => {
           content: `
           <h2>Abstract:</h2>
           <p>${article.abstract}</p>
-          <a href="https://jpacs-api.onrender.com/uploads/${article.file}" download>Download Article</a>
+          <a href="${article.file}" download> <button>Download Article</button></a>
         `,
           author: wpAuthorId, // Use the WordPress user ID for the author
           status: "publish",

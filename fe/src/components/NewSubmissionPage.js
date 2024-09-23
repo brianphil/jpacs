@@ -102,13 +102,13 @@ const NewSubmissionPage = ({
         const token = localStorage.getItem("token");
         const configs = {
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
             Authorization: token,
           },
         };
         const response = await axios.post(
           `${config.BASE_URL}/api/articles/submit`,
-          ...payload,
+          {...payload},
           configs
         );
         if (response.data) {
