@@ -8,22 +8,25 @@ const base64 = require("base-64");
 const WP_API_URL = process.env.WP_API_URL;
 const WP_USERNAME = process.env.WP_USERNAME;
 const WP_APP_PASSWORD = process.env.WP_APP_PASSWORD;
-
 const articleRoutes = (upload) => {
   const router = express.Router();
 
+  // Submit an article
   router.post(
     "/submit",
     isAuthenticated,
+    // upload.single("file"),
     async (req, res) => {
+      console.log("Body", req.body)
+      const file = req.body.file
       try {
         const article = new Article({
           title: req.body.title,
           abstract: req.body.abstract,
-          file: req.body.file, // This is now the Bytescale file URL
+          file, // Save the filename or path in your database
           author: req.user._id,
         });
-  
+
         await article.save();
         res.status(201).json(article);
       } catch (error) {
@@ -32,8 +35,6 @@ const articleRoutes = (upload) => {
       }
     }
   );
-
-module.exports = articleRoutes;
 
   // Function to publish an article to WordPress
   async function publishArticleToWordPress(article) {

@@ -108,7 +108,7 @@ const NewSubmissionPage = ({
         };
         const response = await axios.post(
           `${config.BASE_URL}/api/articles/submit`,
-          payload,
+          ...payload,
           configs
         );
         if (response.data) {
