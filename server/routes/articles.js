@@ -5,15 +5,21 @@ const { isAuthenticated, isEditor } = require("../middlewares/auth");
 const ObjectId = require("mongoose").Types.ObjectId;
 const axios = require("axios");
 const base64 = require("base-64");
-const { UploadManager } = require('@bytescale/sdk');
+
 const WP_API_URL = process.env.WP_API_URL;
 const WP_USERNAME = process.env.WP_USERNAME;
 const WP_APP_PASSWORD = process.env.WP_APP_PASSWORD;
 
+const articleRoutes = (upload) => {
+  const router = express.Router();
+
+
+// Initialize Bytescale UploadManager
 const uploadManager = new UploadManager({
   apiKey: process.env.BYTESCALE_API_KEY,
 });
-const articleRoutes = (upload) => {
+
+const articleRoutes = () => {
   const router = express.Router();
 
   // Submit an article
@@ -21,18 +27,17 @@ const articleRoutes = (upload) => {
     "/submit",
     isAuthenticated,
     async (req, res) => {
-      console.log(req.file)
       try {
         // Get the file data from the request
-        const fileData = req.file.data; // Assuming the file is sent as base64 in the request body
+        const fileData = req.body.file; //the file is sent as base64 in the request body
 
         // Upload the file to Bytescale
         const uploadResponse = await uploadManager.upload({
           data: Buffer.from(fileData, 'base64'),
-          originalFileName: req.file.filename, // Ensure this is sent from the client
+          originalFileName: req.body.fileName, // Ensure this is sent from the client
           path: {
             folderPath: '/articles/', // Adjust the folder path as needed
-            fileName: `${Date.now()}_${req.file.filename.replace(/\s/g, "_")}`,
+            fileName: `${Date.now()}_${req.body.fileName.replace(/\s/g, "_")}`,
           },
         });
 
@@ -52,6 +57,11 @@ const articleRoutes = (upload) => {
       }
     }
   );
+
+  return router;
+};
+
+module.exports = articleRoutes;
 
   // Function to publish an article to WordPress
   async function publishArticleToWordPress(article) {
@@ -73,7 +83,7 @@ const articleRoutes = (upload) => {
           content: `
           <h2>Abstract:</h2>
           <p>${article.abstract}</p>
-          <a href="${article.file}" download>Download Article</a>
+          <a href="https://jpacs-api.onrender.com/uploads/${article.file}" download>Download Article</a>
         `,
           author: wpAuthorId, // Use the WordPress user ID for the author
           status: "publish",

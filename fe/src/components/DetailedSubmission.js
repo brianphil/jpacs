@@ -52,7 +52,7 @@ const DetailedSubmission = ({submissionId}) => {
             <>
               <Card.Title>File</Card.Title>
               <Card.Text>
-                <a href={`${config.BASE_URL}/uploads/${submission.file}`} target="_blank" rel="noopener noreferrer">
+                <a href={`${submission.file}`} target="_blank" rel="noopener noreferrer" download>
                   Download File
                 </a>
               </Card.Text>

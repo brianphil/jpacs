@@ -83,36 +83,55 @@ const NewSubmissionPage = ({
     }
 
     if (title && abstract && file) {
-      const formData = new FormData();
-
-      formData.append("title", title);
-      formData.append("abstract", abstract);
-      formData.append("file", file);
       try {
         setLoading(true);
         const token = localStorage.getItem("token");
-        const configs = {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: token
+    
+        // Convert file to base64
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file);
+        
+        fileReader.onload = async () => {
+          const base64File = fileReader.result.split(',')[1]; // Remove the data:image/jpeg;base64, part
+          
+          const payload = {
+            title,
+            abstract,
+            file: base64File,
+            fileName: file.name
+          };
+    
+          const configs = {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token
+            }
+          };
+    
+          const response = await axios.post(
+            `${config.BASE_URL}/api/articles/submit`,
+            payload,
+            configs
+          );
+    
+          if (response.data) {
+            setSuccess("Article submitted successfully!");
+            setTimeout(() => {
+              fetchSubmissions();
+              setLoading(false);
+              handleClose();
+            }, 3000);
           }
         };
-        const response = await axios.post(
-          `${config.BASE_URL}/api/articles/submit`,
-          formData,
-          configs
-        );
-        if (response.data) {
-          setSuccess("Article submitted successfully!");
-          setTimeout(() => {
-            fetchSubmissions();
-            setLoading(false);
-            handleClose();
-          }, 3000);
-        }
+    
+        fileReader.onerror = (error) => {
+          throw new Error("File could not be read: " + error.message);
+        };
+    
       } catch (error) {
         console.error(error);
         setError("Failed to create submission.");
+        setLoading(false);
       }
     }
   };
