@@ -5,7 +5,7 @@ const { isAuthenticated, isEditor } = require("../middlewares/auth");
 const ObjectId = require("mongoose").Types.ObjectId;
 const axios = require("axios");
 const base64 = require("base-64");
-
+const { UploadManager } = require('@bytescale/sdk');
 const WP_API_URL = process.env.WP_API_URL;
 const WP_USERNAME = process.env.WP_USERNAME;
 const WP_APP_PASSWORD = process.env.WP_APP_PASSWORD;
