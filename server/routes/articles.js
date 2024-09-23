@@ -21,6 +21,7 @@ const articleRoutes = (upload) => {
     "/submit",
     isAuthenticated,
     async (req, res) => {
+      console.log(req.file)
       try {
         // Get the file data from the request
         const fileData = req.file.data; // Assuming the file is sent as base64 in the request body
