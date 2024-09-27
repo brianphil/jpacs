@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.css": "/static/css/main.0a837947.css",
-    "main.js": "/static/js/main.ecafcfe3.js",
+    "main.css": "/static/css/main.3addabf7.css",
+    "main.js": "/static/js/main.8ede9195.js",
     "static/media/jpacs-logo.png": "/static/media/jpacs-logo.dc1ae78b489748043118.png",
     "index.html": "/index.html",
-    "main.0a837947.css.map": "/static/css/main.0a837947.css.map",
-    "main.ecafcfe3.js.map": "/static/js/main.ecafcfe3.js.map"
+    "main.3addabf7.css.map": "/static/css/main.3addabf7.css.map",
+    "main.8ede9195.js.map": "/static/js/main.8ede9195.js.map"
   },
   "entrypoints": [
-    "static/css/main.0a837947.css",
-    "static/js/main.ecafcfe3.js"
+    "static/css/main.3addabf7.css",
+    "static/js/main.8ede9195.js"
   ]
 }
