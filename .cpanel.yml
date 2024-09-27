@@ -1,0 +1,19 @@
+---
+deployment:
+  tasks:
+    - export DEPLOY_PATH=$HOME/portal.jpacsciences.com
+    - echo "Starting deployment to $DEPLOY_PATH"
+
+    # Install npm dependencies
+    - /opt/cpanel/ea-nodejs16/bin/npm install --prefix $DEPLOY_PATH
+
+    # Build the project if necessary (optional)
+    - /opt/cpanel/ea-nodejs16/bin/npm run build --prefix $DEPLOY_PATH
+
+    # Restart Node.js application using PM2 or another process manager
+    - /opt/cpanel/ea-nodejs16/bin/pm2 restart jpacs || /opt/cpanel/ea-nodejs16/bin/pm2 start $DEPLOY_PATH/server.js --name "jpacs"
+
+# Optional: Define an email address to get notifications on deployment
+# notifications:
+#   recipients:
+#     - your-email@example.com
